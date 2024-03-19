@@ -174,7 +174,7 @@ class Language
      * Advanced message formatting.
      *
      * @param array|string $message
-     * @param string[]     $args
+     * @param list<string> $args
      *
      * @return array|string
      */
