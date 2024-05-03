@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -17,11 +19,13 @@ use CodeIgniter\Entity\Entity;
 use Config\Database;
 use InvalidArgumentException;
 use stdClass;
+use Tests\Support\Entity\User;
 use Tests\Support\Entity\UUID;
 use Tests\Support\Models\EventModel;
 use Tests\Support\Models\JobModel;
 use Tests\Support\Models\SecondaryModel;
 use Tests\Support\Models\UserModel;
+use Tests\Support\Models\UserTimestampModel;
 use Tests\Support\Models\UUIDPkeyModel;
 use Tests\Support\Models\ValidModel;
 use Tests\Support\Models\WithoutAutoIncrementModel;
@@ -378,6 +382,51 @@ final class UpdateModelTest extends LiveModelTestCase
         $this->model->update($id, $entity);
     }
 
+    public function testUpdateSetObject(): void
+    {
+        $this->createModel(UserModel::class);
+
+        $object          = new stdClass();
+        $object->name    = 'Jones Martin';
+        $object->email   = 'jones@example.org';
+        $object->country = 'India';
+
+        /** @var int|string $id */
+        $id = $this->model->insert($object);
+
+        /** @var stdClass $object */
+        $object       = $this->model->find($id);
+        $object->name = 'John Smith';
+
+        $return = $this->model->where('id', $id)->set($object)->update();
+
+        $this->assertTrue($return);
+    }
+
+    public function testUpdateSetEntity(): void
+    {
+        $this->createModel(UserModel::class);
+
+        $object          = new stdClass();
+        $object->id      = 1;
+        $object->name    = 'Jones Martin';
+        $object->email   = 'jones@example.org';
+        $object->country = 'India';
+
+        $id = $this->model->insert($object);
+
+        $entity = new Entity([
+            'id'      => 1,
+            'name'    => 'John Smith',
+            'email'   => 'john@example.org',
+            'country' => 'India',
+        ]);
+
+        $return = $this->model->where('id', $id)->set($entity)->update();
+
+        $this->assertTrue($return);
+    }
+
     public function testUpdateEntityWithPrimaryKeyCast(): void
     {
         if (
@@ -532,5 +581,25 @@ final class UpdateModelTest extends LiveModelTestCase
                 'update(): argument #1 ($id) should not be boolean.',
             ],
         ];
+    }
+
+    public function testUpdateEntityUpdateOnlyChangedFalse(): void
+    {
+        $model = new class () extends UserTimestampModel {
+            protected $returnType             = User::class;
+            protected bool $updateOnlyChanged = false;
+        };
+
+        $user           = $model->find(1);
+        $updateAtBefore = $user->updated_at;
+
+        // updates the Entity without changes.
+        $result = $model->update(1, $user);
+
+        $user          = $model->find(1);
+        $updateAtAfter = $user->updated_at;
+
+        $this->assertTrue($result);
+        $this->assertNotSame($updateAtBefore, $updateAtAfter);
     }
 }

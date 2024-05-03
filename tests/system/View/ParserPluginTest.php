@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -50,6 +52,10 @@ final class ParserPluginTest extends CIUnitTestCase
      */
     public function testPreviousURL(): void
     {
+        // Workaround for errors on PHPUnit 10 and PHP 8.3.
+        // See https://github.com/sebastianbergmann/phpunit/issues/5403#issuecomment-1906810619
+        restore_error_handler();
+
         $template = '{+ previous_url +}';
 
         // Ensure a previous URL exists to work with.
@@ -87,6 +93,10 @@ final class ParserPluginTest extends CIUnitTestCase
         $template = '{+ lang Number.terabyteAbbr +}';
 
         $this->assertSame('TB', $this->parser->renderString($template));
+
+        $template = '{+ lang Time.years 2024 +}';
+
+        $this->assertSame('2,024 years', $this->parser->renderString($template));
     }
 
     public function testValidationErrors(): void
@@ -116,6 +126,10 @@ final class ParserPluginTest extends CIUnitTestCase
         $template = '{+ siteURL +}';
 
         $this->assertSame('http://example.com/index.php', $this->parser->renderString($template));
+
+        $template = '{+ siteURL login +}';
+
+        $this->assertSame('http://example.com/index.php/login', $this->parser->renderString($template));
     }
 
     public function testValidationErrorsList(): void

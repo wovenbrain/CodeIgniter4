@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -21,9 +23,9 @@ class Registrar
     /**
      * DB config array for testing purposes.
      *
-     * @var array
+     * @var array<string, array<string, array<string, bool|int|string>|bool|int|string>>
      */
-    protected static $dbConfig = [
+    protected static array $dbConfig = [
         'MySQLi' => [
             'DSN'      => '',
             'hostname' => '127.0.0.1',
@@ -34,8 +36,8 @@ class Registrar
             'DBPrefix' => 'db_',
             'pConnect' => false,
             'DBDebug'  => true,
-            'charset'  => 'utf8',
-            'DBCollat' => 'utf8_general_ci',
+            'charset'  => 'utf8mb4',
+            'DBCollat' => 'utf8mb4_general_ci',
             'swapPre'  => '',
             'encrypt'  => false,
             'compress' => false,
@@ -54,7 +56,7 @@ class Registrar
             'pConnect' => false,
             'DBDebug'  => true,
             'charset'  => 'utf8',
-            'DBCollat' => 'utf8_general_ci',
+            'DBCollat' => '',
             'swapPre'  => '',
             'encrypt'  => false,
             'compress' => false,
@@ -73,7 +75,7 @@ class Registrar
             'pConnect'    => false,
             'DBDebug'     => true,
             'charset'     => 'utf8',
-            'DBCollat'    => 'utf8_general_ci',
+            'DBCollat'    => '',
             'swapPre'     => '',
             'encrypt'     => false,
             'compress'    => false,
@@ -93,7 +95,7 @@ class Registrar
             'pConnect' => false,
             'DBDebug'  => true,
             'charset'  => 'utf8',
-            'DBCollat' => 'utf8_general_ci',
+            'DBCollat' => '',
             'swapPre'  => '',
             'encrypt'  => false,
             'compress' => false,
@@ -112,7 +114,7 @@ class Registrar
             'pConnect' => false,
             'DBDebug'  => true,
             'charset'  => 'AL32UTF8',
-            'DBCollat' => 'utf8_general_ci',
+            'DBCollat' => '',
             'swapPre'  => '',
             'encrypt'  => false,
             'compress' => false,
@@ -124,18 +126,16 @@ class Registrar
     /**
      * Override database config
      *
-     * @return array
+     * @return array<string, array<string, bool|int|string>|bool|int|string>
      */
-    public static function Database()
+    public static function Database(): array
     {
         $config = [];
 
         // Under GitHub Actions, we can set an ENV var named 'DB'
         // so that we can test against multiple databases.
-        if ($group = getenv('DB')) {
-            if (! empty(self::$dbConfig[$group])) {
-                $config['tests'] = self::$dbConfig[$group];
-            }
+        if (($group = getenv('DB')) && isset(self::$dbConfig[$group])) {
+            $config['tests'] = self::$dbConfig[$group];
         }
 
         return $config;
@@ -146,9 +146,9 @@ class Registrar
      *
      * @see PublisherRestrictionsTest::testRegistrarsNotAllowed()
      *
-     * @return array
+     * @return array<string, array<string, string>>
      */
-    public static function Publisher()
+    public static function Publisher(): array
     {
         return [
             'restrictions' => [SUPPORTPATH => '*'],

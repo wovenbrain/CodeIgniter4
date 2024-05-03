@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -74,6 +76,25 @@ final class JoinTest extends CIUnitTestCase
         $builder->join('table2', "table1.field1 = table2.field2 AND table1.field1 = 'foo' AND table2.field2 = 0", 'LEFT');
 
         $expectedSQL = "SELECT * FROM \"table1\" LEFT JOIN \"table2\" ON \"table1\".\"field1\" = \"table2\".\"field2\" AND \"table1\".\"field1\" = 'foo' AND \"table2\".\"field2\" = 0";
+
+        $this->assertSame($expectedSQL, str_replace("\n", ' ', $builder->getCompiledSelect()));
+    }
+
+    /**
+     * @see https://github.com/codeigniter4/CodeIgniter4/issues/8791
+     */
+    public function testJoinMultipleConditionsBetween(): void
+    {
+        $builder = new BaseBuilder('table1', $this->db);
+
+        $builder->join(
+            'leases',
+            'units.unit_id = leases.unit_id AND CURDATE() BETWEEN lease_start_date AND lease_exp_date',
+            'LEFT'
+        );
+
+        // @TODO Should be `... CURDATE() BETWEEN "lease_start_date" AND "lease_exp_date"`
+        $expectedSQL = 'SELECT * FROM "table1" LEFT JOIN "leases" ON "units"."unit_id" = "leases"."unit_id" AND CURDATE() BETWEEN lease_start_date AND lease_exp_date';
 
         $this->assertSame($expectedSQL, str_replace("\n", ' ', $builder->getCompiledSelect()));
     }

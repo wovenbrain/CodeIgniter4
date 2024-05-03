@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -41,7 +43,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         return new SiteURIFactory($appConfig, $superglobals);
     }
 
-    public function testDefault()
+    public function testDefault(): void
     {
         // /index.php/woot?code=good#pos
         $_SERVER['REQUEST_URI'] = '/index.php/woot';
@@ -53,7 +55,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath());
     }
 
-    public function testDefaultEmpty()
+    public function testDefaultEmpty(): void
     {
         // /
         $_SERVER['REQUEST_URI'] = '/';
@@ -65,7 +67,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath());
     }
 
-    public function testRequestURI()
+    public function testRequestURI(): void
     {
         // /index.php/woot?code=good#pos
         $_SERVER['REQUEST_URI'] = '/index.php/woot';
@@ -77,7 +79,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testRequestURINested()
+    public function testRequestURINested(): void
     {
         // I'm not sure but this is a case of Apache config making such SERVER
         // values?
@@ -97,7 +99,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testRequestURISubfolder()
+    public function testRequestURISubfolder(): void
     {
         // /ci/index.php/popcorn/woot?code=good#pos
         $_SERVER['REQUEST_URI'] = '/ci/index.php/popcorn/woot';
@@ -109,7 +111,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testRequestURINoIndex()
+    public function testRequestURINoIndex(): void
     {
         // /sub/example
         $_SERVER['REQUEST_URI'] = '/sub/example';
@@ -121,7 +123,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testRequestURINginx()
+    public function testRequestURINginx(): void
     {
         // /ci/index.php/woot?code=good#pos
         $_SERVER['REQUEST_URI'] = '/index.php/woot?code=good';
@@ -133,7 +135,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testRequestURINginxRedirecting()
+    public function testRequestURINginxRedirecting(): void
     {
         // /?/ci/index.php/woot
         $_SERVER['REQUEST_URI'] = '/?/ci/woot';
@@ -145,7 +147,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testRequestURISuppressed()
+    public function testRequestURISuppressed(): void
     {
         // /woot?code=good#pos
         $_SERVER['REQUEST_URI'] = '/woot';
@@ -157,7 +159,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testRequestURIGetPath()
+    public function testRequestURIGetPath(): void
     {
         // /index.php/fruits/banana
         $_SERVER['REQUEST_URI'] = '/index.php/fruits/banana';
@@ -168,7 +170,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame('fruits/banana', $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testRequestURIPathIsRelative()
+    public function testRequestURIPathIsRelative(): void
     {
         // /sub/folder/index.php/fruits/banana
         $_SERVER['REQUEST_URI'] = '/sub/folder/index.php/fruits/banana';
@@ -179,7 +181,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame('fruits/banana', $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testRequestURIStoresDetectedPath()
+    public function testRequestURIStoresDetectedPath(): void
     {
         // /fruits/banana
         $_SERVER['REQUEST_URI'] = '/fruits/banana';
@@ -192,7 +194,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame('fruits/banana', $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testRequestURIPathIsNeverRediscovered()
+    public function testRequestURIPathIsNeverRediscovered(): void
     {
         $_SERVER['REQUEST_URI'] = '/fruits/banana';
         $_SERVER['SCRIPT_NAME'] = '/index.php';
@@ -205,7 +207,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame('fruits/banana', $factory->detectRoutePath('REQUEST_URI'));
     }
 
-    public function testQueryString()
+    public function testQueryString(): void
     {
         // /index.php?/ci/woot
         $_SERVER['REQUEST_URI']  = '/index.php?/ci/woot';
@@ -220,7 +222,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath('QUERY_STRING'));
     }
 
-    public function testQueryStringWithQueryString()
+    public function testQueryStringWithQueryString(): void
     {
         // /index.php?/ci/woot?code=good#pos
         $_SERVER['REQUEST_URI']  = '/index.php?/ci/woot?code=good';
@@ -237,7 +239,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame(['code' => 'good'], $_GET);
     }
 
-    public function testQueryStringEmpty()
+    public function testQueryStringEmpty(): void
     {
         // /index.php?
         $_SERVER['REQUEST_URI'] = '/index.php?';
@@ -249,7 +251,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath('QUERY_STRING'));
     }
 
-    public function testPathInfoUnset()
+    public function testPathInfoUnset(): void
     {
         // /index.php/woot?code=good#pos
         $_SERVER['REQUEST_URI'] = '/index.php/woot';
@@ -261,7 +263,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
         $this->assertSame($expected, $factory->detectRoutePath('PATH_INFO'));
     }
 
-    public function testPathInfoSubfolder()
+    public function testPathInfoSubfolder(): void
     {
         $appConfig          = new App();
         $appConfig->baseURL = 'http://localhost:8888/ci431/public/';
@@ -283,7 +285,7 @@ final class SiteURIFactoryDetectRoutePathTest extends CIUnitTestCase
      * @param string $path
      * @param string $detectPath
      */
-    public function testExtensionPHP($path, $detectPath)
+    public function testExtensionPHP($path, $detectPath): void
     {
         $config          = new App();
         $config->baseURL = 'http://example.com/';

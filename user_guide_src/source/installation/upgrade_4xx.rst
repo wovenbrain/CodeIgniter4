@@ -41,7 +41,7 @@ Downloads
 Namespaces
 ==========
 
-- CI4 is built for PHP 7.4+, and everything in the framework is namespaced,
+- CI4 is built for PHP 8.1+, and everything in the framework is namespaced,
   except for the helper and lang files.
 
 Application Structure
@@ -101,6 +101,19 @@ Model, View and Controller
     upgrade_views
     upgrade_controllers
 
+Core Class Changes
+==================
+
+- Input
+    - CI3's `Input <http://codeigniter.com/userguide3/libraries/input.html>`_
+      corresponds to CI4's :doc:`IncomingRequest </incoming/incomingrequest>`.
+    - For historical reasons, CI3 and CI4 used incorrect HTTP method names like
+      "get", "post". Since v4.5.0, CI4 uses the correct HTTP method names like
+      "GET", "POST".
+- Output
+    - CI3's `Output <http://codeigniter.com/userguide3/libraries/output.html>`_
+      corresponds to CI4's :doc:`Responses </outgoing/response>`.
+
 Class Loading
 =============
 
@@ -149,8 +162,8 @@ Helpers
 - `String Helper <https://www.codeigniter.com/userguide3/helpers/string_helper.html>`_ functions
   in CI3 are included in :doc:`../helpers/text_helper` in CI4.
 - In CI4, ``redirect()`` is completely changed from CI3's.
-    - `redirect() Documentation CodeIgniter 3.X <https://codeigniter.com/userguide3/helpers/url_helper.html#redirect>`_
-    - `redirect() Documentation CodeIgniter 4.X <../general/common_functions.html#redirect>`_
+    - `redirect() Documentation CodeIgniter 3.x <https://codeigniter.com/userguide3/helpers/url_helper.html#redirect>`_
+    - `redirect() Documentation CodeIgniter 4.x <../general/common_functions.html#redirect>`_
     - In CI4, :php:func:`redirect()` returns a ``RedirectResponse`` instance instead of
       redirecting and terminating script execution. You must return it from Controllers
       or Controller Filters.
@@ -225,8 +238,6 @@ Upgrading Libraries
   `Trackback <http://codeigniter.com/userguide3/libraries/trackback.html>`_,
   `XML-RPC /-Server <http://codeigniter.com/userguide3/libraries/xmlrpc.html>`_,
   and `Zip Encoding <http://codeigniter.com/userguide3/libraries/zip.html>`_.
-- CI3's `Input <http://codeigniter.com/userguide3/libraries/input.html>`_ corresponds to CI4's :doc:`IncomingRequest </incoming/incomingrequest>`.
-- CI3's `Output <http://codeigniter.com/userguide3/libraries/output.html>`_ corresponds to CI4's :doc:`Responses </outgoing/response>`.
 - All the other libraries, which exist in both CodeIgniter versions, can be upgraded with some adjustments.
   The most important and mostly used libraries received an Upgrade Guide, which will help you with simple
   steps and examples to adjust your code.
@@ -240,10 +251,11 @@ Upgrading Libraries
     upgrade_encryption
     upgrade_file_upload
     upgrade_html_tables
+    upgrade_images
     upgrade_localization
     upgrade_migrations
-    upgrade_pagination
     upgrade_responses
+    upgrade_pagination
     upgrade_routing
     upgrade_security
     upgrade_sessions

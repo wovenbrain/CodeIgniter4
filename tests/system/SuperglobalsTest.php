@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -20,7 +22,7 @@ use CodeIgniter\Test\CIUnitTestCase;
  */
 final class SuperglobalsTest extends CIUnitTestCase
 {
-    public function testSetGet()
+    public function testSetGet(): void
     {
         $globals = new Superglobals([], []);
 

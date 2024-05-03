@@ -106,13 +106,15 @@ Service Accessors
 
 .. php:function:: lang($line[, $args[, $locale]])
 
-    :param string $line: The line of text to retrieve
+    :param string $line: The language filename and the key of the text to retrieve.
     :param array  $args: An array of data to substitute for placeholders.
-    :param string $locale: Specify a different locale to be used instead of default one.
+    :param string $locale: Specify a different locale to be used instead of the current locale.
+    :returns: The text in the language file
+    :rtype: list<string>|string
 
-    Retrieves a locale-specific file based on an alias string.
+    Retrieves text from the language files.
 
-    For more information, see the :doc:`Localization </outgoing/localization>` page.
+    For more information, see the :ref:`language-localization`.
 
 .. php:function:: model($name[, $getShared = true[, &$conn = null]])
 
@@ -180,6 +182,7 @@ Service Accessors
     :rtype: string
 
     Grabs the current RendererInterface-compatible class
+    (:doc:`View <../outgoing/view_renderer>` class by default)
     and tells it to render the specified view. Simply provides
     a convenience method that can be used in Controllers,
     libraries, and routed closures.
@@ -325,13 +328,17 @@ Miscellaneous Functions
     :param   string   $level: The level of severity
     :param   string   $message: The message that is to be logged.
     :param   array    $context: An associative array of tags and their values that should be replaced in $message
-    :returns: true if was logged successfully or false if there was a problem logging it
+    :returns: void
     :rtype: bool
+
+    .. note:: Since v4.5.0, the return value is fixed to be compatible with PSR
+        Log. In previous versions, it returned ``true`` if was logged successfully
+        or ``false`` if there was a problem logging it.
 
     Logs a message using the Log Handlers defined in **app/Config/Logger.php**.
 
-    Level can be one of the following values: **emergency**, **alert**, **critical**, **error**, **warning**,
-    **notice**, **info**, or **debug**.
+    Level can be one of the following values: ``emergency``, ``alert``, ``critical``, ``error``, ``warning``,
+    ``notice``, ``info``, or ``debug``.
 
     Context can be used to substitute values in the message string. For full details, see the
     :doc:`Logging Information <logging>` page.

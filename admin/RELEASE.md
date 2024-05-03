@@ -2,7 +2,7 @@
 
 > Documentation guide based on the releases of `4.0.5` and `4.1.0` on January 31, 2021.
 >
-> Updated for `4.4.3` on October 27, 2023.
+> Updated for `4.5.0` on April 7, 2024.
 >
 > -MGatner, kenjis
 
@@ -25,10 +25,10 @@ git push upstream HEAD
 If you release a new minor version.
 
 * [ ] Create PR to merge `4.x` into `develop` and merge it
-* [ ] Rename the current minor version (e.g., `4.4`) in Setting > Branches >
-  "Branch protection rules" to the next minor version. E.g. `4.4` → `4.5`
+* [ ] Rename the current minor version (e.g., `4.5`) in Setting > Branches >
+  "Branch protection rules" to the next minor version. E.g. `4.5` → `4.6`
 * [ ] Delete the merged `4.x` branch (This closes all PRs to the branch)
-* [ ] Do the regular release process. Go to the next "Changelog" section
+* Do the regular release process. Go to the next "Changelog" section
 
 ## Changelog
 
@@ -88,13 +88,14 @@ Work off direct clones of the repos so the release branches persist for a time.
 > generating much new content.
 
 * [ ] Replace **CHANGELOG.md** with the new version generated above
-* [ ] Update **user_guide_src/source/changelogs/{version}.rst**
+* [ ] Update **user_guide_src/source/changelogs/v4.x.x.rst**
   * Remove the section titles that have no items
 * [ ] Update **user_guide_src/source/installation/upgrade_{ver}.rst**
-  * fill in the "All Changes" section, and add it to **upgrading.rst**
-    * git diff --name-status origin/master -- . ':!system'
-  * Remove the section titles that have no items
-  * [Minor version only] Update the "from" version in the title. E.g., `from 4.3.x` → `from 4.3.8`
+  * [ ] fill in the "All Changes" section, and add it to **upgrading.rst**
+    * git diff --name-status origin/master -- . ':!system' ':!tests' ':!user_guide_src'
+    * Note: `tests/` is not used for distribution repos. See `admin/starter/tests/`
+  * [ ] Remove the section titles that have no items
+  * [ ] [Minor version only] Update the "from" version in the title. E.g., `from 4.3.x` → `from 4.3.8`
 * [ ] Run `php admin/prepare-release.php 4.x.x` and push to origin
   * The above command does the following:
     * Create a new branch `release-4.x.x`
@@ -150,10 +151,10 @@ Work off direct clones of the repos so the release branches persist for a time.
     composer test && composer info codeigniter4/framework
     ```
 * [ ] Verify that the user guide actions succeeded:
-  * "[Deploy Distributable Repos](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/deploy-distributables.yml)", the main repo
-  * "[Deploy Production](https://github.com/codeigniter4/userguide/actions/workflows/deploy.yml)", UG repo
-  * "[pages-build-deployment](https://github.com/codeigniter4/userguide/actions/workflows/pages/pages-build-deployment)", UG repo
-  * Check if "CodeIgniter4.x.x.epub" is added to UG repo. "CodeIgniter.epub" was
+  * [ ] "[Deploy Distributable Repos](https://github.com/codeigniter4/CodeIgniter4/actions/workflows/deploy-distributables.yml)", the main repo
+  * [ ] "[Deploy Production](https://github.com/codeigniter4/userguide/actions/workflows/deploy.yml)", UG repo
+  * [ ] "[pages-build-deployment](https://github.com/codeigniter4/userguide/actions/workflows/pages/pages-build-deployment)", UG repo
+  * [ ] Check if "CodeIgniter4.x.x.epub" is added to UG repo. "CodeIgniter.epub" was
     created when v4.3.8 was released.
 * [ ] Fast-forward `develop` branch to catch the merge commit from `master`
     ```console

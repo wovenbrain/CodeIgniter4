@@ -104,12 +104,19 @@ Setting the Current Locale
 
 If you want to set the locale directly, you may use
 ``IncomingRequest::setLocale(string $locale)``.
-You must set supported locales in **app/Config/App.php**:
+
+Before setting the locale, you must set valid locales. Because any attempt to
+set a locale that are not valid will result in
+the :ref:`default locale <setting-the-default-locale>` being set.
+
+By default, the valid locales are defined in ``Config\App::$supportedLocales``
+in **app/Config/App.php**:
 
 .. literalinclude:: localization/003.php
 
-.. note:: Any attempt to set a locale not included in this array will result in
-    the :ref:`default locale <setting-the-default-locale>` being set.
+.. note:: Since v4.4.0, ``IncomingRequest::setValidLocales()`` has been added to
+    set (and reset) valid locales. Use it if you want to change the valid locales
+    dynamically.
 
 Retrieving the Current Locale
 =============================
@@ -122,6 +129,8 @@ If your controller is extending ``CodeIgniter\Controller``, this will be availab
 Alternatively, you can use the :doc:`Services class </concepts/services>` to retrieve the current request:
 
 .. literalinclude:: localization/006.php
+
+.. _language-localization:
 
 *********************
 Language Localization
@@ -150,8 +159,10 @@ Basic Usage
 ===========
 
 You can use the :php:func:`lang()` helper function to retrieve text from any of the language files, by passing the
-filename and the language key as the first parameter, separated by a period (.). For example, to load the
-``errorEmailMissing`` string from the **Errors.php** language file, you would do the following:
+filename and the language key as the first parameter, separated by a period (``.``).
+
+For example, to load the ``errorEmailMissing`` string from the **Errors.php**
+language file, you would do the following:
 
 .. literalinclude:: localization/010.php
 
@@ -160,7 +171,7 @@ For nested definition, you would do the following:
 .. literalinclude:: localization/011.php
 
 If the requested language key doesn't exist in the file for the current locale, the string will be passed
-back, unchanged. In this example, it would return 'Errors.errorEmailMissing' or 'Errors.nested.error.message' if it didn't exist.
+back, unchanged. In this example, it would return ``Errors.errorEmailMissing`` or ``Errors.nested.error.message`` if it didn't exist.
 
 Replacing Parameters
 --------------------
@@ -254,3 +265,65 @@ project:
 
 The translated messages will be automatically picked
 up because the translations folders get mapped appropriately.
+
+.. _generating-translation-files-via-command:
+
+Generating Translation Files via Command
+========================================
+
+.. versionadded:: 4.5.0
+
+You can automatically generate and update translation files in your **app** folder. The command will search for the use of the ``lang()`` function, combine the current translation keys in **app/Language** by defining the locale ``defaultLocale`` from ``Config\App``.
+After the operation, you need to translate the language keys yourself.
+The command is able to recognize nested keys normally ``File.array.nested.text``.
+Previously saved keys do not change.
+
+.. code-block:: console
+
+    php spark lang:find
+
+.. literalinclude:: localization/019.php
+
+.. note:: When the command scans folders, **app/Language** will be skipped.
+
+The language files generated will most likely not conform to your coding standards.
+It is recommended to format them. For example, run ``vendor/bin/php-cs-fixer fix ./app/Language`` if ``php-cs-fixer`` is installed.
+
+Before updating, it is possible to preview the translations found by the command:
+
+.. code-block:: console
+
+    php spark lang:find --verbose --show-new
+
+The detailed output of ``--verbose`` also shows a list of invalid keys. For example:
+
+.. code-block:: console
+
+    ...
+
+    Files found: 10
+    New translates found: 30
+    Bad translates found: 5
+    +------------------------+---------------------------------+
+    | Bad Key                | Filepath                        |
+    +------------------------+---------------------------------+
+    | ..invalid_nested_key.. | app/Controllers/Translation.php |
+    | .invalid_key           | app/Controllers/Translation.php |
+    | TranslationBad         | app/Controllers/Translation.php |
+    | TranslationBad.        | app/Controllers/Translation.php |
+    | TranslationBad...      | app/Controllers/Translation.php |
+    +------------------------+---------------------------------+
+
+    All operations done!
+
+For a more accurate search, specify the desired locale or directory to scan.
+
+.. code-block:: console
+
+    php spark lang:find --dir Controllers/Translation --locale en --show-new
+
+Detailed information can be found by running the command:
+
+.. code-block:: console
+
+    php spark lang:find --help

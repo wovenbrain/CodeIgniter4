@@ -10,7 +10,8 @@ Queries
 Query Basics
 ************
 
-.. note:: CodeIgniter doesn't support dots (``.``) in the database, table, and column names.
+.. note:: CodeIgniter doesn't support dots (``.``) in the table and column names.
+    Since v4.5.0, database names with dots are supported.
 
 Regular Queries
 ===============
@@ -116,6 +117,7 @@ prefixing set ``true`` (boolean) via the second parameter:
 
 .. literalinclude:: queries/008.php
 
+.. _database-queries-escaping:
 
 ***************
 Escaping Values
@@ -159,6 +161,8 @@ strings are to be used in LIKE conditions so that LIKE wildcards
     method escapes partial strings that you would wrap in quotes
     yourself, it cannot automatically add the ``ESCAPE '!'``
     condition for you, and so you'll have to manually do that.
+
+.. _database-queries-query-bindings:
 
 **************
 Query Bindings

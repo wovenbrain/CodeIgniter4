@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -240,7 +242,7 @@ final class URITest extends CIUnitTestCase
         $this->assertSame($expected, (string) $uri);
     }
 
-    public function testWithScheme()
+    public function testWithScheme(): void
     {
         $url = 'example.com';
         $uri = new URI('http://' . $url);
@@ -251,7 +253,7 @@ final class URITest extends CIUnitTestCase
         $this->assertSame('http://' . $url, (string) $uri);
     }
 
-    public function testWithSchemeSetsHttps()
+    public function testWithSchemeSetsHttps(): void
     {
         $url = 'http://example.com/path';
         $uri = new URI($url);
@@ -267,7 +269,7 @@ final class URITest extends CIUnitTestCase
         $this->assertSame($expected, (string) $uri);
     }
 
-    public function testWithSchemeSetsEmpty()
+    public function testWithSchemeSetsEmpty(): void
     {
         $url = 'example.com';
         $uri = new URI('http://' . $url);
@@ -473,8 +475,8 @@ final class URITest extends CIUnitTestCase
     {
         return [
             'dot-segment' => [
-                '/./path/to/nowhere',
-                '/path/to/nowhere',
+                '/./path/to/nowhere', // path
+                '/path/to/nowhere',   // expectedPath
             ],
             'double-dots' => [
                 '/../path/to/nowhere',
@@ -484,17 +486,29 @@ final class URITest extends CIUnitTestCase
                 './path/to/nowhere',
                 '/path/to/nowhere',
             ],
-            'start-double' => [
+            'start-double-dot' => [
                 '../path/to/nowhere',
                 '/path/to/nowhere',
             ],
-            'decoded' => [
-                '../%41path',
+            'decode-percent-encoded-chars' => [
+                '/%41path',
                 '/Apath',
             ],
-            'encoded' => [
+            'decode-slash' => [
+                '/a%2Fb',
+                '/a/b',
+            ],
+            'encode-unreserved-chars' => [
                 '/path^here',
                 '/path%5Ehere',
+            ],
+            'encode-multibyte-chars' => [
+                '/あいう',
+                '/%E3%81%82%E3%81%84%E3%81%86',
+            ],
+            'encode-invalid-percent-encoding' => [
+                '/pa%2-th',
+                '/pa%252-th',
             ],
         ];
     }

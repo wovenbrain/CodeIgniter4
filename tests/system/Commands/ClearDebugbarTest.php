@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -39,7 +41,7 @@ final class ClearDebugbarTest extends CIUnitTestCase
 
         // create 10 dummy debugbar json files
         for ($i = 0; $i < 10; $i++) {
-            $path = str_replace($time, $time - $i, $path);
+            $path = str_replace((string) $time, (string) ($time - $i), $path);
             file_put_contents($path, "{}\n");
 
             $time -= $i;
@@ -59,7 +61,7 @@ final class ClearDebugbarTest extends CIUnitTestCase
         $result = $this->getStreamFilterBuffer();
 
         $this->assertFileDoesNotExist(WRITEPATH . 'debugbar' . DIRECTORY_SEPARATOR . "debugbar_{$this->time}.json");
-        $this->assertFileExists(WRITEPATH . 'debugbar' . DIRECTORY_SEPARATOR . '.gitkeep');
+        $this->assertFileExists(WRITEPATH . 'debugbar' . DIRECTORY_SEPARATOR . 'index.html');
         $this->assertStringContainsString('Debugbar cleared.', $result);
     }
 }

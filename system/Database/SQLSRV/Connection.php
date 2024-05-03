@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -121,7 +123,7 @@ class Connection extends BaseConnection
             unset($connection['UID'], $connection['PWD']);
         }
 
-        if (strpos($this->hostname, ',') === false && $this->port !== '') {
+        if (! str_contains($this->hostname, ',') && $this->port !== '') {
             $this->hostname .= ', ' . $this->port;
         }
 
@@ -171,6 +173,8 @@ class Connection extends BaseConnection
 
     /**
      * Close the database connection.
+     *
+     * @return void
      */
     protected function _close()
     {
@@ -190,7 +194,7 @@ class Connection extends BaseConnection
      */
     public function insertID(): int
     {
-        return $this->query('SELECT SCOPE_IDENTITY() AS insert_id')->getRow()->insert_id ?? 0;
+        return (int) ($this->query('SELECT SCOPE_IDENTITY() AS insert_id')->getRow()->insert_id ?? 0);
     }
 
     /**
@@ -231,7 +235,7 @@ class Connection extends BaseConnection
     /**
      * Returns an array of objects with index data
      *
-     * @return list<stdClass>
+     * @return array<string, stdClass>
      *
      * @throws DatabaseException
      */
@@ -253,10 +257,10 @@ class Connection extends BaseConnection
             $_fields     = explode(',', trim($row->index_keys));
             $obj->fields = array_map(static fn ($v) => trim($v), $_fields);
 
-            if (strpos($row->index_description, 'primary key located on') !== false) {
+            if (str_contains($row->index_description, 'primary key located on')) {
                 $obj->type = 'PRIMARY';
             } else {
-                $obj->type = (strpos($row->index_description, 'nonclustered, unique') !== false) ? 'UNIQUE' : 'INDEX';
+                $obj->type = (str_contains($row->index_description, 'nonclustered, unique')) ? 'UNIQUE' : 'INDEX';
             }
 
             $retVal[$obj->name] = $obj;
@@ -269,7 +273,7 @@ class Connection extends BaseConnection
      * Returns an array of objects with Foreign key data
      * referenced_object_id  parent_object_id
      *
-     * @return list<stdClass>
+     * @return array<string, stdClass>
      *
      * @throws DatabaseException
      */

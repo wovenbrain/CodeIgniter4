@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -48,7 +50,7 @@ final class ResponseCacheTest extends CIUnitTestCase
     ): IncomingRequest {
         $_POST = $_GET = $_SERVER = $_REQUEST = $_ENV = $_COOKIE = $_SESSION = [];
 
-        $_SERVER['REQUEST_URI'] = '/' . $uri . ($query ? '?' . http_build_query($query) : '');
+        $_SERVER['REQUEST_URI'] = '/' . $uri . ($query !== [] ? '?' . http_build_query($query) : '');
         $_SERVER['SCRIPT_NAME'] = '/index.php';
 
         $appConfig ??= $this->appConfig;
@@ -91,7 +93,7 @@ final class ResponseCacheTest extends CIUnitTestCase
         return (new ResponseCache($cacheConfig, $cache))->setTtl(300);
     }
 
-    public function testCachePageIncomingRequest()
+    public function testCachePageIncomingRequest(): void
     {
         $pageCache = $this->createResponseCache();
 
@@ -129,7 +131,7 @@ final class ResponseCacheTest extends CIUnitTestCase
         $this->assertNull($cachedResponse);
     }
 
-    public function testCachePageIncomingRequestWithCacheQueryString()
+    public function testCachePageIncomingRequestWithCacheQueryString(): void
     {
         $cacheConfig                   = new CacheConfig();
         $cacheConfig->cacheQueryString = true;
@@ -167,7 +169,27 @@ final class ResponseCacheTest extends CIUnitTestCase
         $this->assertNull($cachedResponse);
     }
 
-    public function testCachePageCLIRequest()
+    public function testCachePageIncomingRequestWithHttpMethods(): void
+    {
+        $pageCache = $this->createResponseCache();
+
+        $request = $this->createIncomingRequest('foo/bar');
+
+        $response = new Response($this->appConfig);
+        $response->setBody('The response body.');
+
+        $return = $pageCache->make($request, $response);
+
+        $this->assertTrue($return);
+
+        // Check cache with a request with the same URI path and different HTTP method
+        $request        = $this->createIncomingRequest('foo/bar')->withMethod('POST');
+        $cachedResponse = $pageCache->get($request, new Response($this->appConfig));
+
+        $this->assertNull($cachedResponse);
+    }
+
+    public function testCachePageCLIRequest(): void
     {
         $pageCache = $this->createResponseCache();
 
@@ -195,7 +217,7 @@ final class ResponseCacheTest extends CIUnitTestCase
         $this->assertNull($cachedResponse);
     }
 
-    public function testUnserializeError()
+    public function testUnserializeError(): void
     {
         $this->expectException(ErrorException::class);
         $this->expectExceptionMessage('unserialize(): Error at offset 0 of 12 bytes');
@@ -221,7 +243,7 @@ final class ResponseCacheTest extends CIUnitTestCase
         $pageCache->get($request, new Response($this->appConfig));
     }
 
-    public function testInvalidCacheError()
+    public function testInvalidCacheError(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Error unserializing page cache');

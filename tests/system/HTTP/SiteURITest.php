@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -40,7 +42,7 @@ final class SiteURITest extends CIUnitTestCase
         string $expectedFragment,
         array $expectedSegments,
         int $expectedTotalSegments
-    ) {
+    ): void {
         $config            = new App();
         $config->indexPage = $indexPage;
         $config->baseURL   = $baseURL;
@@ -268,7 +270,7 @@ final class SiteURITest extends CIUnitTestCase
         ];
     }
 
-    public function testConstructorHost()
+    public function testConstructorHost(): void
     {
         $config                   = new App();
         $config->allowedHostnames = ['sub.example.com'];
@@ -282,7 +284,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame('http://sub.example.com/', $uri->getBaseURL());
     }
 
-    public function testConstructorScheme()
+    public function testConstructorScheme(): void
     {
         $config = new App();
 
@@ -293,7 +295,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame('https://example.com/', $uri->getBaseURL());
     }
 
-    public function testConstructorEmptyScheme()
+    public function testConstructorEmptyScheme(): void
     {
         $config = new App();
 
@@ -304,7 +306,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame('http://example.com/', $uri->getBaseURL());
     }
 
-    public function testConstructorForceGlobalSecureRequests()
+    public function testConstructorForceGlobalSecureRequests(): void
     {
         $config                            = new App();
         $config->forceGlobalSecureRequests = true;
@@ -315,7 +317,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame('https://example.com/', $uri->getBaseURL());
     }
 
-    public function testConstructorInvalidBaseURL()
+    public function testConstructorInvalidBaseURL(): void
     {
         $this->expectException(ConfigException::class);
 
@@ -339,7 +341,7 @@ final class SiteURITest extends CIUnitTestCase
         string $expectedFragment,
         array $expectedSegments,
         int $expectedTotalSegments
-    ) {
+    ): void {
         $config            = new App();
         $config->indexPage = $indexPage;
         $config->baseURL   = $baseURL;
@@ -359,7 +361,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame($expectedTotalSegments, $uri->getTotalSegments());
     }
 
-    public function testSetSegment()
+    public function testSetSegment(): void
     {
         $config = new App();
 
@@ -376,7 +378,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame(2, $uri->getTotalSegments());
     }
 
-    public function testSetSegmentOutOfRange()
+    public function testSetSegmentOutOfRange(): void
     {
         $this->expectException(HTTPException::class);
 
@@ -387,7 +389,7 @@ final class SiteURITest extends CIUnitTestCase
         $uri->setSegment(4, 'four');
     }
 
-    public function testSetSegmentSilentOutOfRange()
+    public function testSetSegmentSilentOutOfRange(): void
     {
         $config = new App();
         $uri    = new SiteURI($config);
@@ -398,7 +400,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame(['one', 'method'], $uri->getSegments());
     }
 
-    public function testSetSegmentZero()
+    public function testSetSegmentZero(): void
     {
         $this->expectException(HTTPException::class);
 
@@ -409,7 +411,7 @@ final class SiteURITest extends CIUnitTestCase
         $uri->setSegment(0, 'four');
     }
 
-    public function testSetSegmentSubfolder()
+    public function testSetSegmentSubfolder(): void
     {
         $config          = new App();
         $config->baseURL = 'http://example.com/ci4/';
@@ -427,7 +429,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame(2, $uri->getTotalSegments());
     }
 
-    public function testGetRoutePath()
+    public function testGetRoutePath(): void
     {
         $config = new App();
         $uri    = new SiteURI($config);
@@ -435,7 +437,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame('', $uri->getRoutePath());
     }
 
-    public function testGetSegments()
+    public function testGetSegments(): void
     {
         $config = new App();
         $uri    = new SiteURI($config);
@@ -443,7 +445,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame([], $uri->getSegments());
     }
 
-    public function testGetSegmentZero()
+    public function testGetSegmentZero(): void
     {
         $this->expectException(HTTPException::class);
 
@@ -454,7 +456,7 @@ final class SiteURITest extends CIUnitTestCase
         $uri->getSegment(0);
     }
 
-    public function testGetSegmentOutOfRange()
+    public function testGetSegmentOutOfRange(): void
     {
         $this->expectException(HTTPException::class);
 
@@ -465,7 +467,7 @@ final class SiteURITest extends CIUnitTestCase
         $uri->getSegment(4);
     }
 
-    public function testGetTotalSegments()
+    public function testGetTotalSegments(): void
     {
         $config = new App();
         $uri    = new SiteURI($config);
@@ -473,7 +475,7 @@ final class SiteURITest extends CIUnitTestCase
         $this->assertSame(0, $uri->getTotalSegments());
     }
 
-    public function testSetURI()
+    public function testSetURI(): void
     {
         $this->expectException(BadMethodCallException::class);
 
@@ -483,7 +485,7 @@ final class SiteURITest extends CIUnitTestCase
         $uri->setURI('http://another.site.example.jp/');
     }
 
-    public function testSetBaseURI()
+    public function testSetBaseURI(): void
     {
         $this->expectException(BadMethodCallException::class);
 
@@ -493,7 +495,7 @@ final class SiteURITest extends CIUnitTestCase
         $uri->setBaseURL('http://another.site.example.jp/');
     }
 
-    public function testGetBaseURL()
+    public function testGetBaseURL(): void
     {
         $config = new App();
         $uri    = new SiteURI($config);

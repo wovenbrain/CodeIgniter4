@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -32,6 +34,10 @@ final class FormHelperTest extends CIUnitTestCase
         parent::setUp();
 
         helper('form');
+
+        // Workaround for errors on PHPUnit 10 and PHP 8.3.
+        // See https://github.com/sebastianbergmann/phpunit/issues/5403#issuecomment-1906810619
+        restore_error_handler();
     }
 
     private function setRequest(): void
@@ -46,25 +52,40 @@ final class FormHelperTest extends CIUnitTestCase
         Services::injectMock('request', $request);
     }
 
+    private function setCsrfFilter(): void
+    {
+        $filters                      = config(Filters::class);
+        $filters->globals['before'][] = 'csrf';
+        service('filters')->initialize();
+    }
+
     public function testFormOpenBasic(): void
     {
         $this->setRequest();
 
-        $before = (new Filters())->globals['before'];
-        if (in_array('csrf', $before, true) || array_key_exists('csrf', $before)) {
-            $Value    = csrf_hash();
-            $Name     = csrf_token();
-            $expected = <<<EOH
-                <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" accept-charset="utf-8">
-                <input type="hidden" name="{$Name}" value="{$Value}" style="display:none;">
+        $expected = <<<'EOH'
+            <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" accept-charset="utf-8">
 
-                EOH;
-        } else {
-            $expected = <<<'EOH'
-                <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" accept-charset="utf-8">
+            EOH;
+        $attributes = [
+            'name'   => 'form',
+            'id'     => 'form',
+            'method' => 'POST',
+        ];
+        $this->assertSame($expected, form_open('foo/bar', $attributes));
+    }
 
-                EOH;
-        }
+    public function testFormOpenBasicWithCsrf(): void
+    {
+        $this->setRequest();
+        $this->setCsrfFilter();
+
+        $value    = csrf_hash();
+        $name     = csrf_token();
+        $expected = <<<EOH
+            <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" accept-charset="utf-8">
+            <input type="hidden" name="{$name}" value="{$value}">
+            EOH;
 
         $attributes = [
             'name'   => 'form',
@@ -95,21 +116,29 @@ final class FormHelperTest extends CIUnitTestCase
     {
         $this->setRequest();
 
-        $before = (new Filters())->globals['before'];
-        if (in_array('csrf', $before, true) || array_key_exists('csrf', $before)) {
-            $Value    = csrf_hash();
-            $Name     = csrf_token();
-            $expected = <<<EOH
-                <form action="http://example.com/index.php" name="form" id="form" method="POST" accept-charset="utf-8">
-                <input type="hidden" name="{$Name}" value="{$Value}" style="display:none;">
+        $expected = <<<'EOH'
+            <form action="http://example.com/index.php" name="form" id="form" method="POST" accept-charset="utf-8">
 
-                EOH;
-        } else {
-            $expected = <<<'EOH'
-                <form action="http://example.com/index.php" name="form" id="form" method="POST" accept-charset="utf-8">
+            EOH;
+        $attributes = [
+            'name'   => 'form',
+            'id'     => 'form',
+            'method' => 'POST',
+        ];
+        $this->assertSame($expected, form_open('', $attributes));
+    }
 
-                EOH;
-        }
+    public function testFormOpenWithoutActionWithCsrf(): void
+    {
+        $this->setRequest();
+        $this->setCsrfFilter();
+
+        $value    = csrf_hash();
+        $name     = csrf_token();
+        $expected = <<<EOH
+            <form action="http://example.com/index.php" name="form" id="form" method="POST" accept-charset="utf-8">
+            <input type="hidden" name="{$name}" value="{$value}">
+            EOH;
         $attributes = [
             'name'   => 'form',
             'id'     => 'form',
@@ -122,22 +151,29 @@ final class FormHelperTest extends CIUnitTestCase
     {
         $this->setRequest();
 
-        $before = (new Filters())->globals['before'];
-        if (in_array('csrf', $before, true) || array_key_exists('csrf', $before)) {
-            $Value    = csrf_hash();
-            $Name     = csrf_token();
-            $expected = <<<EOH
-                <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="post" accept-charset="utf-8">
-                <input type="hidden" name="{$Name}" value="{$Value}" style="display:none;">
+        $expected = <<<'EOH'
+            <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="post" accept-charset="utf-8">
 
-                EOH;
-        } else {
-            $expected = <<<'EOH'
-                <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="post" accept-charset="utf-8">
+            EOH;
 
-                EOH;
-        }
+        $attributes = [
+            'name' => 'form',
+            'id'   => 'form',
+        ];
+        $this->assertSame($expected, form_open('foo/bar', $attributes));
+    }
 
+    public function testFormOpenWithoutMethodWithCsrf(): void
+    {
+        $this->setRequest();
+        $this->setCsrfFilter();
+
+        $value    = csrf_hash();
+        $name     = csrf_token();
+        $expected = <<<EOH
+            <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="post" accept-charset="utf-8">
+            <input type="hidden" name="{$name}" value="{$value}">
+            EOH;
         $attributes = [
             'name' => 'form',
             'id'   => 'form',
@@ -149,25 +185,36 @@ final class FormHelperTest extends CIUnitTestCase
     {
         $this->setRequest();
 
-        $before = (new Filters())->globals['before'];
-        if (in_array('csrf', $before, true) || array_key_exists('csrf', $before)) {
-            $Value    = csrf_hash();
-            $Name     = csrf_token();
-            $expected = <<<EOH
-                <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" accept-charset="utf-8">
-                <input type="hidden" name="foo" value="bar">
-                <input type="hidden" name="{$Name}" value="{$Value}">
+        $expected = <<<'EOH'
+            <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" accept-charset="utf-8">
 
-                EOH;
-        } else {
-            $expected = <<<'EOH'
-                <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" accept-charset="utf-8">
+            <input type="hidden" name="foo" value="bar">
 
-                <input type="hidden" name="foo" value="bar">
+            EOH;
+        $attributes = [
+            'name'   => 'form',
+            'id'     => 'form',
+            'method' => 'POST',
+        ];
+        $hidden = [
+            'foo' => 'bar',
+        ];
+        $this->assertSame($expected, form_open('foo/bar', $attributes, $hidden));
+    }
 
-                EOH;
-        }
+    public function testFormOpenWithHiddenWithCsrf(): void
+    {
+        $this->setRequest();
+        $this->setCsrfFilter();
 
+        $value    = csrf_hash();
+        $name     = csrf_token();
+        $expected = <<<EOH
+            <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" accept-charset="utf-8">
+            <input type="hidden" name="{$name}" value="{$value}">
+            <input type="hidden" name="foo" value="bar">
+
+            EOH;
         $attributes = [
             'name'   => 'form',
             'id'     => 'form',
@@ -183,21 +230,33 @@ final class FormHelperTest extends CIUnitTestCase
     {
         $this->setRequest();
 
-        $before = (new Filters())->globals['before'];
-        if (in_array('csrf', $before, true) || array_key_exists('csrf', $before)) {
-            $Value    = csrf_hash();
-            $Name     = csrf_token();
-            $expected = <<<EOH
-                <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
-                <input type="hidden" name="{$Name}" value="{$Value}" style="display:none;">
+        $expected = <<<'EOH'
+            <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
 
-                EOH;
-        } else {
-            $expected = <<<'EOH'
-                <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
+            EOH;
+        $attributes = [
+            'name'   => 'form',
+            'id'     => 'form',
+            'method' => 'POST',
+        ];
+        $this->assertSame($expected, form_open_multipart('foo/bar', $attributes));
 
-                EOH;
-        }
+        // make sure it works with attributes as a string too
+        $attributesString = 'name="form" id="form" method="POST"';
+        $this->assertSame($expected, form_open_multipart('foo/bar', $attributesString));
+    }
+
+    public function testFormOpenMultipartWithCsrf(): void
+    {
+        $this->setRequest();
+        $this->setCsrfFilter();
+
+        $value    = csrf_hash();
+        $name     = csrf_token();
+        $expected = <<<EOH
+            <form action="http://example.com/index.php/foo/bar" name="form" id="form" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
+            <input type="hidden" name="{$name}" value="{$value}">
+            EOH;
         $attributes = [
             'name'   => 'form',
             'id'     => 'form',
@@ -261,7 +320,7 @@ final class FormHelperTest extends CIUnitTestCase
         $this->assertSame($expected, form_input($data));
     }
 
-    public function testFormInputXHTML(): void
+    public function testFormInputXhtml(): void
     {
         $this->disableHtml5();
 
@@ -281,14 +340,14 @@ final class FormHelperTest extends CIUnitTestCase
         $this->enableHtml5();
     }
 
-    private function disableHtml5()
+    private function disableHtml5(): void
     {
         $doctypes        = new DocTypes();
         $doctypes->html5 = false;
         _solidus($doctypes);
     }
 
-    private function enableHtml5()
+    private function enableHtml5(): void
     {
         $doctypes = new DocTypes();
         _solidus($doctypes);
@@ -326,7 +385,7 @@ final class FormHelperTest extends CIUnitTestCase
         $this->assertSame($expected, form_upload('attachment'));
     }
 
-    public function testFormUploadXHTML(): void
+    public function testFormUploadXhtml(): void
     {
         $this->disableHtml5();
 
@@ -662,7 +721,7 @@ final class FormHelperTest extends CIUnitTestCase
         $this->assertSame($expected, form_checkbox('newsletter', 'accept', true));
     }
 
-    public function testFormCheckboxXHTML(): void
+    public function testFormCheckboxXhtml(): void
     {
         $this->disableHtml5();
 
@@ -1020,7 +1079,10 @@ final class FormHelperTest extends CIUnitTestCase
 
         $html = validation_show_error('id');
 
-        $this->assertSame('<span class="help-block">The ID field is required.</span>' . "\n", $html);
+        $this->assertSame('<!-- DEBUG-VIEW START 1 SYSTEMPATH/Validation/Views/single.php -->
+<span class="help-block">The ID field is required.</span>
+
+<!-- DEBUG-VIEW ENDED 1 SYSTEMPATH/Validation/Views/single.php -->' . "\n", $html);
     }
 
     public function testValidationShowErrorForWildcards(): void
@@ -1039,7 +1101,10 @@ final class FormHelperTest extends CIUnitTestCase
 
         $html = validation_show_error('user.*.name');
 
-        $this->assertSame('<span class="help-block">The Name field is required.</span>' . "\n", $html);
+        $this->assertSame('<!-- DEBUG-VIEW START 1 SYSTEMPATH/Validation/Views/single.php -->
+<span class="help-block">The Name field is required.</span>
+
+<!-- DEBUG-VIEW ENDED 1 SYSTEMPATH/Validation/Views/single.php -->' . "\n", $html);
     }
 
     public function testFormParseFormAttributesTrue(): void

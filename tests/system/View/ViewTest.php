@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -388,7 +390,7 @@ final class ViewTest extends CIUnitTestCase
         $this->assertStringContainsString('<p>Third</p>', $content);
     }
 
-    public function testRenderSectionSavingData()
+    public function testRenderSectionSavingData(): void
     {
         $view     = new View($this->config, $this->viewsDir, $this->loader);
         $expected = "<title>Welcome to CodeIgniter 4!</title>\n<h1>Welcome to CodeIgniter 4!</h1>\n<p>Hello World</p>";

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -30,7 +32,7 @@ final class DirectoryHasherTest extends CIUnitTestCase
         $this->hasher = new DirectoryHasher();
     }
 
-    public function testHashApp()
+    public function testHashApp(): void
     {
         $results = $this->hasher->hashApp();
 
@@ -38,7 +40,7 @@ final class DirectoryHasherTest extends CIUnitTestCase
         $this->assertArrayHasKey('app', $results);
     }
 
-    public function testHashDirectoryInvalid()
+    public function testHashDirectoryInvalid(): void
     {
         $this->expectException(FrameworkException::class);
         $this->expectExceptionMessage('Directory does not exist: "' . APPPATH . 'Foo"');
@@ -46,7 +48,7 @@ final class DirectoryHasherTest extends CIUnitTestCase
         $this->hasher->hashDirectory(APPPATH . 'Foo');
     }
 
-    public function testUniqueHashes()
+    public function testUniqueHashes(): void
     {
         $hash1 = $this->hasher->hashDirectory(APPPATH);
         $hash2 = $this->hasher->hashDirectory(SYSTEMPATH);
@@ -54,7 +56,7 @@ final class DirectoryHasherTest extends CIUnitTestCase
         $this->assertNotSame($hash1, $hash2);
     }
 
-    public function testRepeatableHashes()
+    public function testRepeatableHashes(): void
     {
         $hash1 = $this->hasher->hashDirectory(APPPATH);
         $hash2 = $this->hasher->hashDirectory(APPPATH);
@@ -62,7 +64,7 @@ final class DirectoryHasherTest extends CIUnitTestCase
         $this->assertSame($hash1, $hash2);
     }
 
-    public function testHash()
+    public function testHash(): void
     {
         $expected = md5(implode('', $this->hasher->hashApp()));
 

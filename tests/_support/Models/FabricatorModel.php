@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -26,8 +28,10 @@ class FabricatorModel extends Model
         'description',
     ];
 
-    // Return a faked entity
-    public function fake(Generator &$faker)
+    /**
+     * Return a faked entity
+     */
+    public function fake(Generator &$faker): object
     {
         return (object) [
             'name'        => $faker->ipv4(),

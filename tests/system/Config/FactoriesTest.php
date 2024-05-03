@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -257,7 +259,7 @@ final class FactoriesTest extends CIUnitTestCase
         $this->assertInstanceOf(SomeWidget::class, $result);
     }
 
-    public function testShortnameReturnsConfigInApp()
+    public function testShortnameReturnsConfigInApp(): void
     {
         // Create a config class in App
         $file   = APPPATH . 'Config/TestRegistrar.php';
@@ -277,7 +279,7 @@ final class FactoriesTest extends CIUnitTestCase
         unlink($file);
     }
 
-    public function testFullClassnameIgnoresPreferApp()
+    public function testFullClassnameIgnoresPreferApp(): void
     {
         // Create a config class in App
         $file   = APPPATH . 'Config/TestRegistrar.php';
@@ -315,7 +317,7 @@ final class FactoriesTest extends CIUnitTestCase
         $this->assertInstanceOf(OtherWidget::class, $result);
     }
 
-    public function testCanLoadTwoCellsWithSameShortName()
+    public function testCanLoadTwoCellsWithSameShortName(): void
     {
         $cell1 = Factories::cells('\\' . SampleClass::class);
         $cell2 = Factories::cells('\\' . \Tests\Support\View\OtherCells\SampleClass::class);
@@ -323,7 +325,7 @@ final class FactoriesTest extends CIUnitTestCase
         $this->assertNotSame($cell1, $cell2);
     }
 
-    public function testCanLoadSharedConfigWithDifferentAlias()
+    public function testCanLoadSharedConfigWithDifferentAlias(): void
     {
         $config1 = Factories::config(App::class);
         $config2 = Factories::config('App');
@@ -331,7 +333,7 @@ final class FactoriesTest extends CIUnitTestCase
         $this->assertSame($config1, $config2);
     }
 
-    public function testDefineSameAliasTwiceWithDifferentClasses()
+    public function testDefineSameAliasTwiceWithDifferentClasses(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
@@ -350,7 +352,7 @@ final class FactoriesTest extends CIUnitTestCase
         );
     }
 
-    public function testDefineSameAliasAndSameClassTwice()
+    public function testDefineSameAliasAndSameClassTwice(): void
     {
         Factories::define(
             'models',
@@ -368,7 +370,7 @@ final class FactoriesTest extends CIUnitTestCase
         $this->assertInstanceOf(UserModel::class, $model);
     }
 
-    public function testDefineNonExistentClass()
+    public function testDefineNonExistentClass(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No such class: App\Models\UserModel');
@@ -380,7 +382,7 @@ final class FactoriesTest extends CIUnitTestCase
         );
     }
 
-    public function testDefineAfterLoading()
+    public function testDefineAfterLoading(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
@@ -396,7 +398,7 @@ final class FactoriesTest extends CIUnitTestCase
         );
     }
 
-    public function testDefineAndLoad()
+    public function testDefineAndLoad(): void
     {
         Factories::define(
             'models',
@@ -405,6 +407,19 @@ final class FactoriesTest extends CIUnitTestCase
         );
 
         $model = model(UserModel::class);
+
+        $this->assertInstanceOf(EntityModel::class, $model);
+    }
+
+    public function testDefineAndGet(): void
+    {
+        Factories::define(
+            'models',
+            UserModel::class,
+            EntityModel::class
+        );
+
+        $model = Factories::get('models', UserModel::class);
 
         $this->assertInstanceOf(EntityModel::class, $model);
     }
@@ -445,7 +460,7 @@ final class FactoriesTest extends CIUnitTestCase
     /**
      * @depends testSetComponentInstances
      */
-    public function testIsUpdated(array $data)
+    public function testIsUpdated(array $data): void
     {
         Factories::reset();
 
@@ -462,5 +477,26 @@ final class FactoriesTest extends CIUnitTestCase
         Factories::setComponentInstances('config', $data);
 
         $this->assertFalse(Factories::isUpdated('config'));
+    }
+
+    public function testGetReturnsFactoriesConfigInstance(): void
+    {
+        $config = Factories::config('App');
+
+        $this->assertSame($config, Factories::get('config', 'App'));
+    }
+
+    public function testGetCreatesConfigInstanceAndFactoriesConfigReturnsIt(): void
+    {
+        $config = Factories::get('config', 'App');
+
+        $this->assertSame($config, Factories::config('App'));
+    }
+
+    public function testGetNonexistentClass(): void
+    {
+        $config = Factories::get('config', 'NonexistentClass');
+
+        $this->assertNull($config);
     }
 }

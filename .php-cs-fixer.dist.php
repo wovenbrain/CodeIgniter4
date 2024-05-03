@@ -21,7 +21,6 @@ $finder = Finder::create()
     ->files()
     ->in([
         __DIR__ . '/system',
-        __DIR__ . '/tests',
         __DIR__ . '/utils',
     ])
     ->exclude([
@@ -30,39 +29,34 @@ $finder = Finder::create()
         'Validation/Views',
     ])
     ->notPath([
-        '_support/View/Cells/multiplier.php',
-        '_support/View/Cells/colors.php',
-        '_support/View/Cells/addition.php',
     ])
     ->notName('#Foobar.php$#')
     ->append([
         __FILE__,
         __DIR__ . '/.php-cs-fixer.no-header.php',
+        __DIR__ . '/.php-cs-fixer.tests.php',
         __DIR__ . '/.php-cs-fixer.user-guide.php',
+        __DIR__ . '/preload.php',
         __DIR__ . '/rector.php',
         __DIR__ . '/spark',
     ]);
 
-$overrides = [];
-
-$options = [
-    'cacheFile' => 'build/.php-cs-fixer.cache',
-    'finder'    => $finder,
+$overrides = [
+    // for updating to coding-standard
+    'modernize_strpos' => true,
 ];
 
-$config = Factory::create(new CodeIgniter4(), $overrides, $options)->forLibrary(
+$options = [
+    'cacheFile'    => 'build/.php-cs-fixer.cache',
+    'finder'       => $finder,
+    'customFixers' => FixerGenerator::create('vendor/nexusphp/cs-config/src/Fixer', 'Nexus\\CsConfig\\Fixer'),
+    'customRules'  => [
+        NoCodeSeparatorCommentFixer::name() => true,
+    ],
+];
+
+return Factory::create(new CodeIgniter4(), $overrides, $options)->forLibrary(
     'CodeIgniter 4 framework',
     'CodeIgniter Foundation',
     'admin@codeigniter.com'
 );
-
-// @TODO: remove this check when support for PHP 7.4 is dropped
-if (PHP_VERSION_ID >= 80000) {
-    $config
-        ->registerCustomFixers(FixerGenerator::create('vendor/nexusphp/cs-config/src/Fixer', 'Nexus\\CsConfig\\Fixer'))
-        ->setRules(array_merge($config->getRules(), [
-            NoCodeSeparatorCommentFixer::name() => true,
-        ]));
-}
-
-return $config;

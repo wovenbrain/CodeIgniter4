@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -15,7 +17,7 @@ use CodeIgniter\Controller;
 
 class Home extends Controller
 {
-    public function getIndex($p1 = null, $p2 = null)
+    public function getIndex($p1 = null, $p2 = null): void
     {
     }
 }

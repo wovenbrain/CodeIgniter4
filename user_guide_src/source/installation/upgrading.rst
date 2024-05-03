@@ -16,6 +16,10 @@ See also :doc:`./backward_compatibility_notes`.
 
     backward_compatibility_notes
 
+    upgrade_452
+    upgrade_451
+    upgrade_450
+    upgrade_448
     upgrade_447
     upgrade_446
     upgrade_445

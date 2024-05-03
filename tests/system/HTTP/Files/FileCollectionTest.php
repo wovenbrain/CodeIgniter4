@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * This file is part of CodeIgniter 4 framework.
  *
@@ -453,7 +455,7 @@ final class FileCollectionTest extends CIUnitTestCase
         $this->assertSame(UPLOAD_ERR_OK, $file->getError());
     }
 
-    public function testClientPathReturnsValidFullPath()
+    public function testClientPathReturnsValidFullPath(): void
     {
         $_FILES = [
             'userfile' => [
@@ -471,7 +473,7 @@ final class FileCollectionTest extends CIUnitTestCase
         $this->assertSame('someDir/someFile.txt', $file->getClientPath());
     }
 
-    public function testClientPathReturnsNullWhenFullPathIsNull()
+    public function testClientPathReturnsNullWhenFullPathIsNull(): void
     {
         $_FILES = [
             'userfile' => [
